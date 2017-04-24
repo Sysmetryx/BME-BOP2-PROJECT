@@ -13,7 +13,7 @@ ________________________________________________________________________________
 ||                                                                                                                                    ||
 ||                                                                                                      LAPORTE NATHAN CLAUDE         ||
 ||                                                                                                      Nept CODE : IBIS2E            ||
-||                                                                                                      Ver. 1.07A March 2017         ||
+||                                                                                                      Ver. 1.05A March 2017         ||
 ||                                                                                                                                    ||
 ||                                                                                                                                    ||
 ||                                                                                                                                    ||
@@ -32,8 +32,6 @@ picture::picture(const char* filename)
 {
     FILE* in_file;
     in_file = fopen(filename, "rb");
-    FILE* out_file;
-    out_file = fopen("copyfile.bmp", "w+b");
     std::cout << filename << std::endl;
     std::cout << sizeof(fileHeader) << std::endl;
     if(in_file != NULL)
@@ -42,26 +40,28 @@ picture::picture(const char* filename)
         fread(&infoHeader, sizeof(infoHeader), 1, in_file); //reading the FILEHEADER
         fread(&palette, sizeof(palette), 1, in_file);
         fread(&matrix, sizeof(matrix), 1, in_file);
-
-        fwrite(&fileHeader, sizeof(fileHeader), 1, out_file);
-        fwrite(&infoHeader, sizeof(infoHeader), 1, out_file);
-        fwrite(&palette, sizeof(palette), 1, out_file);
-        fwrite(&matrix, sizeof(matrix), 1, out_file);
-
         fclose(in_file);
-        fclose(out_file);
      }
     else
     {
         std::cout << "The specified file cannot be loaded" << std::endl;
     }
 }
-
+void picture::img_copy(){
+    FILE* out_file;
+    out_file = fopen("copyfile.bmp", "w+b");
+    fwrite(&fileHeader, sizeof(fileHeader), 1, out_file);
+    fwrite(&infoHeader, sizeof(infoHeader), 1, out_file);
+    fwrite(&palette, sizeof(palette), 1, out_file);
+    fwrite(&matrix, sizeof(matrix), 1, out_file);
+    fclose(out_file);
+}
 
 
 int main()
 {
-  new picture("lena.bmp");
-    return 0;
+  picture test("lena.bmp");
+  test.img_copy();
+  return 0;
 }
 

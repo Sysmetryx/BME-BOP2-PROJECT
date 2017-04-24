@@ -14,7 +14,7 @@ ________________________________________________________________________________
 ||																																	  ||
 ||																										LAPORTE NATHAN CLAUDE         ||
 ||																										Nept CODE : IBIS2E	          ||
-||																										Ver. 1.07A April 2017         ||
+||																										Ver. 1.05A April 2017         ||
 ||                                                                                                                                    ||
 ||																																	  ||
 ||																																	  ||
@@ -70,7 +70,7 @@ private:
 public:
 	picture(const char* filename);
 	~picture();
-	void greyscale();
+	void img_copy();
 };
 
 
