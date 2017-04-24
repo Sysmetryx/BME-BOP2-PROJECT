@@ -23,10 +23,7 @@ ________________________________________________________________________________
 
 #include "pixel.hpp"
 #include <iostream>
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-#include <vector>
 using namespace std;
 
 
@@ -39,10 +36,13 @@ picture::picture(const char* filename)
     { // file opened
         fread(&fileHeader, sizeof(fileHeader), 1, in_file); //reading the FILEHEADER
         fread(&infoHeader, sizeof(infoHeader), 1, in_file); //reading the INFOHEADER
-        matrix = (rgbr*) malloc((infoHeader.img_Width*infoHeader.img_Height)*sizeof(rgbr));
+        int p_number = infoHeader.img_Width*infoHeader.img_Height;
+        matrix = new rgbr[4*p_number];
         std::cout << infoHeader.img_Width << std::endl;
         std::cout << infoHeader.img_Height << std::endl;
         std::cout << sizeof(rgbr) << std::endl;
+        std::cout << sizeof(matrix) << std::endl;
+        std::cout << p_number << std::endl;
         fread(&palette, sizeof(palette), 1, in_file);
         fread(&matrix, sizeof(matrix), 1, in_file);
         fclose(in_file);
@@ -53,13 +53,14 @@ picture::picture(const char* filename)
     }
 }
 
+
 void picture::img_copy(){
     FILE* out_file;
-    out_file = fopen("copyfile.bmp", "w+b");
+    out_file = fopen("copyfile.bmp", "wb");
     fwrite(&fileHeader, sizeof(fileHeader), 1, out_file);
     fwrite(&infoHeader, sizeof(infoHeader), 1, out_file);
     fwrite(&palette, sizeof(palette), 1, out_file);
-    fwrite(&matrix, sizeof(matrix), 1, out_file);
+    fwrite(&matrix, infoHeader.img_Width*infoHeader.img_Height*4, 1, out_file);
     fclose(out_file);
 }
 

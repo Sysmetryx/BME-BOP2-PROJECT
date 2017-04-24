@@ -23,16 +23,17 @@ ________________________________________________________________________________
 */
 
 #include <iostream>
+#include <vector>
 #pragma pack(1)
-using namespace std;
 
-	typedef struct rgbr // Its RGB values default pixels wil be black
-	{
-		char blue = 0;
-		char green = 0;
-		char red = 0;
-		const char reserved = 0;
-	};
+
+typedef struct rgbr // Its RGB values default pixels wil be black
+{
+    char blue = 0;
+    char green = 0;
+    char red = 0;
+    const char reserved = 0;
+};
 
 class picture //A Picture is a collection of pixels.
 {
