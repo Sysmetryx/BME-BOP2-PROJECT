@@ -23,8 +23,10 @@ ________________________________________________________________________________
 
 #include "pixel.hpp"
 #include <iostream>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <vector>
 using namespace std;
 
 
@@ -32,12 +34,15 @@ picture::picture(const char* filename)
 {
     FILE* in_file;
     in_file = fopen(filename, "rb");
-    std::cout << filename << std::endl;
-    std::cout << sizeof(fileHeader) << std::endl;
+
     if(in_file != NULL)
     { // file opened
         fread(&fileHeader, sizeof(fileHeader), 1, in_file); //reading the FILEHEADER
-        fread(&infoHeader, sizeof(infoHeader), 1, in_file); //reading the FILEHEADER
+        fread(&infoHeader, sizeof(infoHeader), 1, in_file); //reading the INFOHEADER
+        matrix = (rgbr*) malloc((infoHeader.img_Width*infoHeader.img_Height)*sizeof(rgbr));
+        std::cout << infoHeader.img_Width << std::endl;
+        std::cout << infoHeader.img_Height << std::endl;
+        std::cout << sizeof(rgbr) << std::endl;
         fread(&palette, sizeof(palette), 1, in_file);
         fread(&matrix, sizeof(matrix), 1, in_file);
         fclose(in_file);
@@ -47,6 +52,7 @@ picture::picture(const char* filename)
         std::cout << "The specified file cannot be loaded" << std::endl;
     }
 }
+
 void picture::img_copy(){
     FILE* out_file;
     out_file = fopen("copyfile.bmp", "w+b");

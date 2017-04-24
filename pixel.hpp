@@ -26,13 +26,13 @@ ________________________________________________________________________________
 #pragma pack(1)
 using namespace std;
 
-	typedef struct // Its RGB values default pixels wil be black
+	typedef struct rgbr // Its RGB values default pixels wil be black
 	{
 		char blue = 0;
 		char green = 0;
 		char red = 0;
 		const char reserved = 0;
-	}rgbr;
+	};
 
 class picture //A Picture is a collection of pixels.
 {
@@ -66,10 +66,9 @@ private:
    char p_red;
    char p_reserved;
   }palette;
-  rgbr matrix[512][512]; //ici, ça doit être img_width et img_height
+  rgbr* matrix; //ici, ça doit être img_width et img_height
 public:
 	picture(const char* filename);
-	~picture();
 	void img_copy();
 };
 
