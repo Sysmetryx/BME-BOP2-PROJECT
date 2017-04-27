@@ -1,54 +1,52 @@
-
 /*
 ________________________________________________________________________________________________________________________________________
 ||____________________________________________________________________________________________________________________________________||
 ||                                                                                                                                    ||
-||																																	  ||
-||							Budapesti Műszaki és Gazdaságtudományi Egyetem, 2016-2017, Spring Semester                                ||
-||										                                                                                              ||
-||										BASICS OF PROGRAMMING 2 : FINAL PROJECT														  ||
-||																																	  ||
-||																																	  ||
-||										BITMAP IMAGE TREATMENT USING C++         													  ||
-||																																      ||
-||																																	  ||
-||																										LAPORTE NATHAN CLAUDE         ||
-||																										Nept CODE : IBIS2E	          ||
-||																										Ver. 1.05A April 2017         ||
+||																																	                                                                  ||
+||							Budapesti Műszaki és Gazdaságtudományi Egyetem, 2016-2017, Spring Semester                                            ||
+||										                                                                                                                ||
+||										BASICS OF PROGRAMMING 2 : FINAL PROJECT														                                              ||
+||																																	                                                                  ||
+||																																	                                                                  ||
+||										BITMAP IMAGE TREATMENT USING C++         					 								                                              ||
+||																																                                                                    ||
+||																																	                                                                  ||
+||																										LAPORTE NATHAN CLAUDE                                                           ||
+||																										Nept CODE : IBIS2E	                                                            ||
+||																										Ver. 1.10B April 2017                                                           ||
 ||                                                                                                                                    ||
-||																																	  ||
-||																																	  ||
+||																																	                                                                  ||
+||																																	                                                                  ||
 ||____________________________________________________________________________________________________________________________________||
 ________________________________________________________________________________________________________________________________________
 */
 
 #include <iostream>
 #include <vector>
-#pragma pack(1)
+#include <fstream>
+#include <math.h>
+#include <stdlib.h>
+#include <typeinfo>
+#define MAX_LENGTH 260
 
+#pragma pack( 1) //Force the memory alignement on 1bit (regular is on 4bits)
+using namespace std;
 
-typedef struct rgbr // Its RGB values default pixels wil be black
+class picture
 {
-    char blue = 0;
-    char green = 0;
-    char red = 0;
-    const char reserved = 0;
-};
-
-class picture //A Picture is a collection of pixels.
-{
-private:
-	struct // Its RGB values default pixels wil be black
-	{
+protected:
+  const char *fileIn;
+  const char *fileOut;
+  struct // Its RGB values default pixels wil be black
+  {
     unsigned char magicNumber[2]; //define the format type.
-    unsigned int size; //Size of the image
-    unsigned short int id_one; //First id
-    unsigned short int id_two; //second id
-    unsigned int offset; //Starting point of the pixel matrix
-	}fileHeader ;
+    unsigned int  size; //Size of the image
+    int           reserved;
+    unsigned int  offset; //Starting point of the pixel matrix
+  }fileHeader ;
   struct
   {
-    int   info_Size;
+    int   info_ize;
     int   img_Width;
     int   img_Height;
     short biPlanes;//Number of color planes
@@ -60,17 +58,22 @@ private:
     int   color_Depth;
     int   biClrImportant;//Number of important colors
   } infoHeader;
-  struct
+  struct pixel// Its RGB values default pixels wil be black
   {
-   char p_blue;
-   char p_green;
-   char p_red;
-   char p_reserved;
-  }palette;
-  rgbr* matrix; //ici, ça doit être img_width et img_height
+    char blue = 0;
+    char green = 0;
+    char red = 0;
+  };
+
+
 public:
-	picture(const char* filename);
-	void img_copy();
+  vector<pixel> pixelTab;
+  picture(const char* filename);
+  void addBorder(int size = 0, char r = 0, char b = 0, char g = 0);
+  void write(const char* filenameOut);
+  void greyScale();
 };
 
 
+void menu();
+void menuOut();
