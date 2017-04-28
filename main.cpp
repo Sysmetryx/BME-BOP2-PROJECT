@@ -80,13 +80,13 @@ void picture::addBorder(int size, char r, char b, char g) //Add a border of the 
 {
     for (int i = 0; i < infoHeader.img_Width * infoHeader.img_Height; i++)
     {
-        if(i < (512 * size) || i > infoHeader.img_Width * infoHeader.img_Height - (512 * size))
+        if(i < (infoHeader.img_Height * size) || i > infoHeader.img_Width * infoHeader.img_Height - (infoHeader.img_Height * size))
         {
             pixelTab[i].blue = b;
             pixelTab[i].red = r;
             pixelTab[i].green = g;
         }
-        if (i % 512 == 0 && i <= infoHeader.img_Width * infoHeader.img_Height - (512 * size) && i >= (512 * size))
+        if (i % infoHeader.img_Width == 0 && i <= infoHeader.img_Width * infoHeader.img_Height - (infoHeader.img_Width * size) && i >= (infoHeader.img_Width * size))
         {
             for (int j = 0; j < size; j++)
             {
