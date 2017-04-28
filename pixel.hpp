@@ -28,9 +28,9 @@ ________________________________________________________________________________
 #include <stdlib.h>
 #include <typeinfo>
 #define MAX_LENGTH 260
+using namespace std;
 
 #pragma pack( 1) //Force the memory alignement on 1bit (regular is on 4bits)
-using namespace std;
 
 class picture
 {

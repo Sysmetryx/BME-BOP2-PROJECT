@@ -72,7 +72,7 @@ void picture::write(const char* filenameOut)
             file.write((char *) (&pixelTab[i]), sizeof(pixel));
         }
     }
-    std::cout << file.is_open() << std::endl;
+    cout << file.is_open() << endl;
     file.close();
 }
 
@@ -149,7 +149,7 @@ void menu()
     cout << "Welcome to BitMAp editor" << endl << "Please, enter the name of a file to open :" << endl << "Exemple : 'Lena.bmp'"<<endl;
     char* filename = new char[MAX_LENGTH];
     cin >> filename;
-    std::cin.ignore();
+
     if( filename ==! "zz"){
         cout<< "Please, enter a valid file name."<< endl;
         menu();
@@ -161,9 +161,8 @@ void menu()
         while(command == 0)
         {   system("cls");
             cout <<"Welcome to BitMAp editor" << endl;
-            cout << "Please, enter a command number : " << endl << "1: add borders to the image " << endl << "2: Transform the image to greyscale" << endl << "3: save changes to the image" <<endl;
+            cout << "Please, enter a command number : " << endl << "1: Add borders to the image " << endl << "2: Transform the image to greyscale" << endl << "3: save changes to the image" <<endl;
             cin >> command;
-            std::cin.ignore();
         }
     switch (command)
     {
@@ -171,24 +170,17 @@ void menu()
         system("cls");
         cout << "please, enter the size :" << endl;
         int border_size;
-        char rcomp;
-        char gcomp;
-        char bcomp;
+        int rcomp;
+        int gcomp;
+        int bcomp;
         cin >> border_size;
-        std::cin.ignore();
-        system("PAUSE");
         cout << "please, enter the red component (0 - 255) :" << endl;
         cin >> rcomp;
-        std::cin.ignore();
-        system("PAUSE");
         cout << "please, enter the green component (0 - 255) :" << endl;
         cin >> gcomp;
-        std::cin.ignore();
-        system("PAUSE");
         cout << "please, enter the blue component (0 - 255) :" << endl;
         cin >> bcomp;
-        std::cin.ignore();
-        pic.addBorder(border_size, rcomp, bcomp, gcomp);
+        pic.addBorder(border_size, (char)rcomp, (char)bcomp, (char)gcomp);
         menuOut(pic);
         break;
 
