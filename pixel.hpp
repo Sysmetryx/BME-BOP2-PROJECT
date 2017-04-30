@@ -2,21 +2,21 @@
 ________________________________________________________________________________________________________________________________________
 ||____________________________________________________________________________________________________________________________________||
 ||                                                                                                                                    ||
-||																																	                                                                  ||
-||							Budapesti Műszaki és Gazdaságtudományi Egyetem, 2016-2017, Spring Semester                                            ||
-||										                                                                                                                ||
-||										BASICS OF PROGRAMMING 2 : FINAL PROJECT														                                              ||
-||																																	                                                                  ||
-||																																	                                                                  ||
-||										BITMAP IMAGE TREATMENT USING C++         					 								                                              ||
-||																																                                                                    ||
-||																																	                                                                  ||
-||																										LAPORTE NATHAN CLAUDE                                                           ||
-||																										Nept CODE : IBIS2E	                                                            ||
-||																										Ver. 1.10B April 2017                                                           ||
 ||                                                                                                                                    ||
-||																																	                                                                  ||
-||																																	                                                                  ||
+||              Budapesti Műszaki és Gazdaságtudományi Egyetem, 2016-2017, Spring Semester                                            ||
+||                                                                                                                                    ||
+||                    BASICS OF PROGRAMMING 2 : FINAL PROJECT                                                                         ||
+||                                                                                                                                    ||
+||                                                                                                                                    ||
+||                    BITMAP IMAGE TREATMENT USING C++                                                                                ||
+||                                                                                                                                    ||
+||                                                                                                                                    ||
+||                                                    LAPORTE NATHAN CLAUDE                                                           ||
+||                                                    Nept CODE : IBIS2E                                                              ||
+||                                                    Ver. 1.10B April 2017                                                           ||
+||                                                                                                                                    ||
+||                                                                                                                                    ||
+||                                                                                                                                    ||
 ||____________________________________________________________________________________________________________________________________||
 ________________________________________________________________________________________________________________________________________
 */
@@ -60,9 +60,9 @@ protected:
   } infoHeader;
   struct pixel// Its RGB values default pixels wil be black
   {
-    char blue = 0;
-    char green = 0;
-    char red = 0;
+    unsigned char blue = 0;
+    unsigned char green = 0;
+    unsigned char red = 0;
   };
 
 
@@ -72,6 +72,7 @@ public:
   void addBorder(int size = 0, char r = 0, char b = 0, char g = 0);
   void write(const char* filenameOut);
   void greyScale();
+  void mozaik(int size);
 };
 
 

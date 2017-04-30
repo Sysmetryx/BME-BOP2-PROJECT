@@ -141,6 +141,11 @@ void menuOut(picture pic)
         system("pause");
         menu();
     }
+    else
+    {
+        cout << "Please, enter a valid command." << endl;
+        menuOut(pic);
+    }
 }
 void menu()
 {
@@ -156,14 +161,14 @@ void menu()
     }
     else
     {
-        picture pic(filename);
-        int command = 0;
-        while(command == 0)
-        {   system("cls");
-            cout <<"Welcome to BitMAp editor" << endl;
-            cout << "Please, enter a command number : " << endl << "1: Add borders to the image " << endl << "2: Transform the image to greyscale" << endl << "3: save changes to the image" <<endl;
-            cin >> command;
-        }
+    picture pic(filename);
+    int command = 0;
+    while(command == 0)
+    {   system("cls");
+        cout <<"Welcome to BitMAp editor" << endl;
+        cout << "Please, enter a command number : " << endl << "1: Add borders to the image." << endl << "2: Transform the image to greyscale." << endl <<"3: Create a mosaic with the image." << endl << "4: Save changes to the image" << endl << "5: Quit the program." << endl;
+        cin >> command;
+    }
     switch (command)
     {
         case 1 :
@@ -191,6 +196,16 @@ void menu()
         break;
 
         case 3 :
+        system("cls");
+        cout << "Please enter a size for the mosaic (ex : 10)" << endl;
+        int size;
+        cin >> size;
+        pic.mozaik(size);
+        menuOut(pic);
+        break;
+
+        case 4 :
+        system("cls");
         cout << "Please, enter a name for the copied file : (ex : 'picture.bmp'" << endl;
         char* filenameOut;
         cin >> filenameOut;
@@ -199,10 +214,66 @@ void menu()
         system("pause");
         menu();
         break;
+
+        case 5:
+        break;
     }
     }
 
 }
+
+
+void picture::mozaik(int size)
+{
+    int i = 0, j = 0, x = 0, y = 0;
+    int red;
+    int blue;
+    int green;
+    for (i = 0; i < infoHeader.img_Height; i += size)
+    {
+       for(j = 0; j < infoHeader.img_Width; j += size)
+        {
+          for(y = 0; y < size; y++)
+          {
+            for(x = 0; x < size; x++)
+            {
+              int index = (i*infoHeader.img_Height)+(j + x)+(y * infoHeader.img_Width);
+              if (index < infoHeader.img_Width * infoHeader.img_Height)
+              {
+              red += pixelTab[index].red;
+              blue += pixelTab[index].blue;
+              green += pixelTab[index].green;
+              }
+            }
+          }
+
+//        On recupère la moyenne de la zone de pixel
+          red = red / (size * size);
+          green = green / (size * size);
+          blue = blue / (size * size);
+
+//        On Re-ecrit le tableau avec la moyenne de chaque zone
+          for(y = 0; y < size; y++)
+          {
+            for(x = 0; x < size; x++)
+            {
+              int index = (i*infoHeader.img_Width)+(j + x)+(y * infoHeader.img_Width);
+              if (index < infoHeader.img_Width * infoHeader.img_Height)
+              {
+              pixelTab[index].red = red;
+              pixelTab[index].blue = blue;
+              pixelTab[index].green = green;
+              }
+            }
+          }
+//        On re-initialize les valeurs des pixel de zone
+          red = 0;
+          blue = 0;
+          green = 0;
+        }
+    }
+}
+
 
 int main()
 {
