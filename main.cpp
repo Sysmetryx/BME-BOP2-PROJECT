@@ -166,7 +166,7 @@ void menu()
     while(command == 0)
     {   system("cls");
         cout <<"Welcome to BitMAp editor" << endl;
-        cout << "Please, enter a command number : " << endl << "1: Add borders to the image." << endl << "2: Transform the image to greyscale." << endl <<"3: Create a mosaic with the image." << endl << "4: Save changes to the image" << endl << "5: Quit the program." << endl;
+        cout << "Please, enter a command number : " << endl << "1: Add borders to the image." << endl << "2: Transform the image to greyscale." << endl <<"3: Create a mosaic with the image." << endl << "4: Add a filter to the image."<< endl << "5: Convert the image to sepia."<< endl << "6: Save changes to the image" << endl << "7: Quit the program." << endl;
         cin >> command;
     }
     switch (command)
@@ -204,7 +204,21 @@ void menu()
         menuOut(pic);
         break;
 
-        case 4 :
+        case 4:
+        system("cls");
+        cout << "Please, select a command for the filter :" << endl << "1: Add a filter with the selected rgb component." << endl << "2: Remove the selected rgb component." << endl;
+        int cmd;
+        cin >> cmd;
+        pic.filter(cmd);
+        menuOut(pic);
+
+        case 5:
+        system("cls");
+        pic.sepia();
+        menuOut(pic);
+        break;
+
+        case 6 :
         system("cls");
         cout << "Please, enter a name for the copied file : (ex : 'picture.bmp'" << endl;
         char* filenameOut;
@@ -215,7 +229,7 @@ void menu()
         menu();
         break;
 
-        case 5:
+        case 7:
         break;
     }
     }
@@ -274,6 +288,124 @@ void picture::mozaik(int size)
     }
 }
 
+void picture::filter(int cmd)
+{
+    int rfilter = 0;
+    int gfilter = 0;
+    int bfilter = 0;
+    switch(cmd)
+    {
+        case 1 : //Adding a color filter to the image.
+        system("cls");
+        cout << "Please, select the red level for the filter" << endl;
+        cin >> rfilter;
+        cout << "Please, select the green level for the filter" << endl;
+        cin >> gfilter;
+        cout << "Please, select the breen level for the filter" << endl;
+        cin >> bfilter;
+        for (int i = 0; i < infoHeader.img_Height * infoHeader.img_Width; ++i)
+        {
+
+            if (rfilter + pixelTab[i].red > 255)
+            {
+                pixelTab[i].red = 255;
+            }
+            else if (rfilter > pixelTab[i].red)
+            {
+                pixelTab[i].red =  pixelTab[i].red + rfilter;
+            }
+            if (bfilter + pixelTab[i].blue > 255)
+            {
+                pixelTab[i].blue = 255;
+            }
+            else if (bfilter > pixelTab[i].blue)
+            {
+                pixelTab[i].blue =  pixelTab[i].blue + bfilter;
+            }
+            if (gfilter + pixelTab[i].green > 255)
+            {
+                pixelTab[i].green = 255;
+            }
+            else if (gfilter > pixelTab[i].green)
+            {
+                pixelTab[i].green =  pixelTab[i].green + gfilter;
+            }
+        }
+        break;
+
+        case 2 :
+        system("cls");
+        cout << "Please, select the red level for the filter" << endl;
+        cin >> rfilter;
+        cout << "Please, select the green level for the filter" << endl;
+        cin >> gfilter;
+        cout << "Please, select the breen level for the filter" << endl;
+        cin >> bfilter;
+        for (int i = 0; i < infoHeader.img_Height * infoHeader.img_Width; ++i)
+        {
+
+            if (pixelTab[i].red - rfilter < 0)
+            {
+                pixelTab[i].red = 0;
+            }
+            else if (rfilter < pixelTab[i].red)
+            {
+                pixelTab[i].red =  pixelTab[i].red - rfilter;
+            }
+            if (pixelTab[i].blue - bfilter < 0)
+            {
+                pixelTab[i].blue = 0;
+            }
+            else if (bfilter < pixelTab[i].blue)
+            {
+                pixelTab[i].blue =  pixelTab[i].blue - bfilter;
+            }
+            if (pixelTab[i].green - gfilter < 0)
+            {
+                pixelTab[i].green = 0;
+            }
+            else if (gfilter < pixelTab[i].green)
+            {
+                pixelTab[i].green =  pixelTab[i].green - gfilter;
+            }
+        }
+        break;
+    }
+}
+
+void picture::sepia(){
+    for(int i = 0; i < infoHeader.img_Height * infoHeader.img_Width; i++)
+    {
+        unsigned char rtemp = pixelTab[i].red;
+        unsigned char gtemp = pixelTab[i].green;
+        unsigned char btemp = pixelTab[i].blue;
+        if((rtemp * .393) + (gtemp *.769) + (btemp * .189) > 255)
+        {
+            pixelTab[i].red = 255;
+        }
+        else
+        {
+            pixelTab[i].red = (rtemp * .393) + (gtemp *.769) + (btemp * .189);
+        }
+
+        if((rtemp * .349) + (gtemp *.686) + (btemp * .168) > 255)
+        {
+            pixelTab[i].green = 255;
+        }
+        else
+        {
+            pixelTab[i].green = (rtemp * .349) + (gtemp *.686) + (btemp * .168);
+        }
+        if((rtemp * .272) + (gtemp *.534) + (btemp * .131) > 255)
+        {
+            pixelTab[i].blue = 255;
+        }
+        else
+        {
+            pixelTab[i].blue = (rtemp * .272) + (gtemp *.534) + (btemp * .131);
+        }
+    }
+}
 
 int main()
 {

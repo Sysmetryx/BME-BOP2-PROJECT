@@ -64,15 +64,17 @@ protected:
     unsigned char green = 0;
     unsigned char red = 0;
   };
-
+  vector<pixel> pixelTab;
 
 public:
-  vector<pixel> pixelTab;
+
   picture(const char* filename);
   void addBorder(int size = 0, char r = 0, char b = 0, char g = 0);
   void write(const char* filenameOut);
   void greyScale();
   void mozaik(int size);
+  void filter(int cmd);
+  void sepia();
 };
 
 
