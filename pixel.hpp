@@ -77,6 +77,20 @@ public:
   void sepia();
 };
 
+class picturePalette : public picture
+{
+  protected :
+  struct palette
+  {
+    unsigned char red;
+    unsigned char green;
+    unsigned char blue;
+    unsigned char reserved;
+  };
 
+  public :
+  picturePalette(const char* filename);
+  void write(const char* filenameOut);
+};
 void menu();
 void menuOut();
