@@ -13,7 +13,7 @@ ________________________________________________________________________________
 ||                                                                                                                                    ||
 ||                                                    LAPORTE NATHAN CLAUDE                                                           ||
 ||                                                    Nept CODE : IBIS2E                                                              ||
-||                                                    Ver. 1.5C  April 2017                                                           ||
+||                                                    Ver. 1.10B April 2017                                                           ||
 ||                                                                                                                                    ||
 ||                                                                                                                                    ||
 ||                                                                                                                                    ||
@@ -92,7 +92,8 @@ class picturePalette : public picture //This is o be used with bmp files under 2
   public :
   picturePalette(const char* filename);
   void write(const char* filenameOut);
+  void convert();
 };
 
 void menu(); //first part of the menu
-void menuOut(); //Last part of the menu where we can save file.
+void menuOut(); //Last part of the menu where we can save
