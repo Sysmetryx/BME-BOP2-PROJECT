@@ -13,7 +13,7 @@ ________________________________________________________________________________
 ||                                                                                                                                    ||
 ||                                                                                                      LAPORTE NATHAN CLAUDE         ||
 ||                                                                                                      Nept CODE : IBIS2E            ||
-||                                                                                                      Ver. 1.10B March 2017         ||
+||                                                                                                      Ver. 1.5C March 2017         ||
 ||                                                                                                                                    ||
 ||                                                                                                                                    ||
 ||                                                                                                                                    ||
@@ -23,81 +23,63 @@ ________________________________________________________________________________
 
 #include "pixel.hpp"
 
-using namespace std;
-
-
-picture::picture(const char* filename){
+picture::picture(const char* filename)//constructor of the object picture.
+{
     int i = 0;
     fileIn = filename;
-    //fileOut = filenameOut;
-//  Ouverture du ficher de lecture
+    ifstream file;
+    file.open(fileIn, ios::in | ios::binary); // We open the selected file.
+    if(file.is_open()) { // file opened
+        file.read((char*) (&fileHeader), sizeof(fileHeader));//reading the first header.
+        file.read((char*) (&infoHeader), sizeof(infoHeader));//reading the second header.
+        pixel tmp; //temporary variable for pixel storage.
+        for (i = 0; i < infoHeader.img_Width * infoHeader.img_Height; i++)
+        {
+            file.read((char*) (&tmp), sizeof(pixel)); //We read and load the pixels.
+            pixelTab.push_back(tmp); //Add an element to the vector, so we use dynamic allocation.
+        }
+        file.close(); //closes the file.
+    }
+}
+
+picturePalette::picturePalette(const char* filename) : picture(filename)//Constructor of the child class. Exactly the same, but with palette added.
+{
+    int i = 0;
+    fileIn = filename;
     ifstream file;
     file.open(fileIn, ios::in | ios::binary);
-
     if(file.is_open()) { // file opened
-//      Lecture des Headers
         file.read((char*) (&fileHeader), sizeof(fileHeader));
         file.read((char*) (&infoHeader), sizeof(infoHeader));
-
-//      Variale temporaire pour stocker un pixel
+        palette tmpP;
+        for(int j = 0; j < infoHeader.color_Depth; j++)
+        {
+            file.read((char*) (&tmpP), sizeof(palette));
+            paletteM.push_back(tmpP);
+        }
         pixel tmp;
-
-//      Lecture / Stockage / Ecriture des pixels
         for (i = 0; i < infoHeader.img_Width * infoHeader.img_Height; i++)
         {
             file.read((char*) (&tmp), sizeof(pixel));
             pixelTab.push_back(tmp);
         }
-
-//      Fermeture des fichiers
         file.close();
     }
 }
 
-picturePalette::picturePalette(const char* filename) : picture(const char* filename)
+void picturePalette::write(const char* filenameOut)//Used to save the file.
 {
     int i = 0;
-    fileIn = filename;
-    //fileOut = filenameOut;
-//  Ouverture du ficher de lecture
-    ifstream file;
-    file.open(fileIn, ios::in | ios::binary);
-
-    if(file.is_open()) { // file opened
-//      Lecture des Headers
-        file.read((char*) (&fileHeader), sizeof(fileHeader));
-        file.read((char*) (&infoHeader), sizeof(infoHeader));
-        file.read((char*) (&palette), sizeof(palette));
-
-//      Variale temporaire pour stocker un pixel
-        pixel tmp;
-
-//      Lecture / Stockage / Ecriture des pixels
-        for (i = 0; i < infoHeader.img_Width * infoHeader.img_Height; i++)
-        {
-            file.read((char*) (&tmp), sizeof(pixel));
-            pixelTab.push_back(tmp);
-        }
-
-//      Fermeture des fichiers
-        file.close();
-    }
-}
-
-void picturePalette::write(const char* filenameOut)
-{
-    int i = 0;
-//  Ouverture du fichier de sortie
     ofstream file;
-    file.open(filenameOut, ios::out | ios::binary);
-
+    file.open(filenameOut, ios::out | ios::binary); //Open / Create the output file.
     if(file.is_open())
     {
-//      Ecriture des Headers
-        file.write((char*) (&fileHeader), sizeof(fileHeader));
-        file.write((char*) (&infoHeader), sizeof(infoHeader));
-        file.write((char*) (&palette), sizeof(palette));
-
+        file.write((char*) (&fileHeader), sizeof(fileHeader));//Writing of the first header
+        file.write((char*) (&infoHeader), sizeof(infoHeader)); //Writing of the second header
+        for(i = 0; i < infoHeader.color_Depth; i++)
+        {
+            file.write((char*) (&paletteM[i]), sizeof(palette));
+        }
         for (i = 0; i < infoHeader.img_Width * infoHeader.img_Height; i++)
         {
             file.write((char *) (&pixelTab[i]), sizeof(pixel));
@@ -107,19 +89,15 @@ void picturePalette::write(const char* filenameOut)
     file.close();
 }
 
-void picture::write(const char* filenameOut)
+void picture::write(const char* filenameOut)//Same function but without the palette being written.
 {
     int i = 0;
-//  Ouverture du fichier de sortie
     ofstream file;
     file.open(filenameOut, ios::out | ios::binary);
-
     if(file.is_open())
     {
-//      Ecriture des Headers
         file.write((char*) (&fileHeader), sizeof(fileHeader));
         file.write((char*) (&infoHeader), sizeof(infoHeader));
-
         for (i = 0; i < infoHeader.img_Width * infoHeader.img_Height; i++)
         {
             file.write((char *) (&pixelTab[i]), sizeof(pixel));
@@ -156,7 +134,7 @@ void picture::addBorder(int size, char r, char b, char g) //Add a border of the 
 
 void picture::greyScale() //Transform a color image to a greyscale image.
 {
-    /* note that for an image to appears correct, we use coefficients to colours, our eye is more sensitive to certain wavelength
+    /* note that for an image to appears correctly, we use coefficients to colours, our eye is more sensitive to certain wavelength
     which is why we use the numbers below. These can be changed depending on the person and the image.*/
     float rweight = 0.2105;
     float gweight = 0.7152;
@@ -172,7 +150,7 @@ void picture::greyScale() //Transform a color image to a greyscale image.
     }
 }
 
-void menuOut(picture pic)
+void menuOut(picture pic)//menu used to save
 {
     system("cls");
     cout << "task completed, would you like to save ? (Y/N)" << endl;
@@ -200,97 +178,180 @@ void menuOut(picture pic)
         menuOut(pic);
     }
 }
-void menu()
+void menu()//Menu to select what effect to apply
 {
     system("cls");
     system("color 0B");
-    cout << "Welcome to BitMAp editor" << endl << "Please, enter the name of a file to open :" << endl << "Exemple : 'Lena.bmp'"<<endl;
-    char* filename = new char[MAX_LENGTH];
-    cin >> filename;
+    cout << "Welcome to BitMAp editor, do you wish to use a color palette ? (Y-N delaut : no)" << endl;
+    char pal;
+    cin >> pal;
+    switch (pal){
+        case 'y' :
+            {
+        cout << "Welcome to BitMAp editor" << endl << "Please, enter the name of a file to open :" << endl << "Exemple : 'Lena.bmp'"<<endl;
+        char* filename1 = new char[MAX_LENGTH];
+        cin >> filename1;
+        picturePalette pic1(filename1);
+        int command1;
+            while(command1 == 0)
+        {   system("cls");
+            cout <<"Welcome to BitMAp editor" << endl;
+            cout << "Please, enter a command number : " << endl << "1: Add borders to the image." << endl << "2: Transform the image to greyscale." << endl <<"3: Create a mosaic with the image." << endl << "4: Add a filter to the image."<< endl << "5: Convert the image to sepia."<< endl << "6: Save changes to the image" << endl << "7: Quit the program." << endl;
+            cin >> command1;
+        }
+        switch (command1)
+        {
+            case 1 :
+                {
+                system("cls");
+                cout << "please, enter the size :" << endl;
+                int border_size;
+                int rcomp;
+                int gcomp;
+                int bcomp;
+                cin >> border_size;
+                cout << "please, enter the red component (0 - 255) :" << endl;
+                cin >> rcomp;
+                cout << "please, enter the green component (0 - 255) :" << endl;
+                cin >> gcomp;
+                cout << "please, enter the blue component (0 - 255) :" << endl;
+                cin >> bcomp;
+                pic1.addBorder(border_size, (char)rcomp, (char)bcomp, (char)gcomp);
+                menuOut(pic1);
+                }
+                break;
 
-    if( filename ==! "zz"){
-        cout<< "Please, enter a valid file name."<< endl;
-        menu();
+            case 2 :
+                system("cls");
+                pic1.greyScale();
+                menuOut(pic1);
+                break;
+
+            case 3 :
+                system("cls");
+                cout << "Please enter a size for the mosaic (ex : 10)" << endl;
+                int size;
+                cin >> size;
+                pic1.mozaik(size);
+                menuOut(pic1);
+                break;
+
+            case 4:
+                system("cls");
+                cout << "Please, select a command for the filter :" << endl << "1: Add a filter with the selected rgb component." << endl << "2: Remove the selected rgb component." << endl;
+                int cmd;
+                cin >> cmd;
+                pic1.filter(cmd);
+                menuOut(pic1);
+                break;
+
+            case 5:
+                system("cls");
+                pic1.sepia();
+                menuOut(pic1);
+            break;
+
+            case 6 :
+                system("cls");
+                cout << "Please, enter a name for the copied file : (ex : 'picture.bmp'" << endl;
+                char* filenameOut;
+                cin >> filenameOut;
+                pic1.write(filenameOut);
+                cout << "Successfully saved, press any key to return to menu" << endl;
+                system("pause");
+                menu();
+            break;
+
+            case 7:
+            break;
+        }
     }
-    else
-    {
-    picture pic(filename);
-    int command = 0;
-    while(command == 0)
-    {   system("cls");
-        cout <<"Welcome to BitMAp editor" << endl;
-        cout << "Please, enter a command number : " << endl << "1: Add borders to the image." << endl << "2: Transform the image to greyscale." << endl <<"3: Create a mosaic with the image." << endl << "4: Add a filter to the image."<< endl << "5: Convert the image to sepia."<< endl << "6: Save changes to the image" << endl << "7: Quit the program." << endl;
-        cin >> command;
-    }
-    switch (command)
-    {
-        case 1 :
-        system("cls");
-        cout << "please, enter the size :" << endl;
-        int border_size;
-        int rcomp;
-        int gcomp;
-        int bcomp;
-        cin >> border_size;
-        cout << "please, enter the red component (0 - 255) :" << endl;
-        cin >> rcomp;
-        cout << "please, enter the green component (0 - 255) :" << endl;
-        cin >> gcomp;
-        cout << "please, enter the blue component (0 - 255) :" << endl;
-        cin >> bcomp;
-        pic.addBorder(border_size, (char)rcomp, (char)bcomp, (char)gcomp);
-        menuOut(pic);
         break;
 
-        case 2 :
-        system("cls");
-        pic.greyScale();
-        menuOut(pic);
+        case 'n':
+        {
+        cout << "Welcome to BitMAp editor" << endl << "Please, enter the name of a file to open :" << endl << "Exemple : 'Lena.bmp'"<<endl;
+        char* filename = new char[MAX_LENGTH];
+        cin >> filename;
+        picture pic(filename);
+        int command = 0;
+        while(command == 0)
+        {
+            system("cls");
+            cout <<"Welcome to BitMAp editor" << endl;
+            cout << "Please, enter a command number : " << endl << "1: Add borders to the image." << endl << "2: Transform the image to greyscale." << endl <<"3: Create a mosaic with the image." << endl << "4: Add a filter to the image."<< endl << "5: Convert the image to sepia."<< endl << "6: Save changes to the image" << endl << "7: Quit the program." << endl;
+            cin >> command;
+        }
+        switch (command)
+        {
+            case 1 :
+                system("cls");
+                cout << "please, enter the size :" << endl;
+                int border_size;
+                int rcomp;
+                int gcomp;
+                int bcomp;
+                cin >> border_size;
+                cout << "please, enter the red component (0 - 255) :" << endl;
+                cin >> rcomp;
+                cout << "please, enter the green component (0 - 255) :" << endl;
+                cin >> gcomp;
+                cout << "please, enter the blue component (0 - 255) :" << endl;
+                cin >> bcomp;
+                pic.addBorder(border_size, (char)rcomp, (char)bcomp, (char)gcomp);
+                menuOut(pic);
+            break;
+
+            case 2 :
+                system("cls");
+                pic.greyScale();
+                menuOut(pic);
+            break;
+
+            case 3 :
+                system("cls");
+                cout << "Please enter a size for the mosaic (ex : 10)" << endl;
+                int size;
+                cin >> size;
+                pic.mozaik(size);
+                menuOut(pic);
+            break;
+
+            case 4:
+                system("cls");
+                cout << "Please, select a command for the filter :" << endl << "1: Add a filter with the selected rgb component." << endl << "2: Remove the selected rgb component." << endl;
+                int cmd;
+                cin >> cmd;
+                pic.filter(cmd);
+                menuOut(pic);
+            break;
+
+            case 5:
+                system("cls");
+                pic.sepia();
+                menuOut(pic);
+            break;
+
+            case 6 :
+                system("cls");
+                cout << "Please, enter a name for the copied file : (ex : 'picture.bmp'" << endl;
+                char* filenameOut;
+                cin >> filenameOut;
+                pic.write(filenameOut);
+                cout << "Successfully saved, press any key to return to menu" << endl;
+                system("pause");
+                menu();
+            break;
+
+            case 7:
+            break;
+        }
+        }
         break;
-
-        case 3 :
-        system("cls");
-        cout << "Please enter a size for the mosaic (ex : 10)" << endl;
-        int size;
-        cin >> size;
-        pic.mozaik(size);
-        menuOut(pic);
-        break;
-
-        case 4:
-        system("cls");
-        cout << "Please, select a command for the filter :" << endl << "1: Add a filter with the selected rgb component." << endl << "2: Remove the selected rgb component." << endl;
-        int cmd;
-        cin >> cmd;
-        pic.filter(cmd);
-        menuOut(pic);
-
-        case 5:
-        system("cls");
-        pic.sepia();
-        menuOut(pic);
-        break;
-
-        case 6 :
-        system("cls");
-        cout << "Please, enter a name for the copied file : (ex : 'picture.bmp'" << endl;
-        char* filenameOut;
-        cin >> filenameOut;
-        pic.write(filenameOut);
-        cout << "Successfully saved, press any key to return to menu" << endl;
-        system("pause");
-        menu();
-        break;
-
-        case 7:
-        break;
-    }
-    }
-
+}
 }
 
-
-void picture::mozaik(int size)
+void picture::mozaik(int size)//Creates a mosaic.
 {
     int i = 0, j = 0, x = 0, y = 0;
     int red;
@@ -312,15 +373,11 @@ void picture::mozaik(int size)
               green += pixelTab[index].green;
               }
             }
-          }
-
-//        On recupère la moyenne de la zone de pixel
+          }//We get the average color of the pixel area.
           red = red / (size * size);
           green = green / (size * size);
           blue = blue / (size * size);
-
-//        On Re-ecrit le tableau avec la moyenne de chaque zone
-          for(y = 0; y < size; y++)
+          for(y = 0; y < size; y++)//Rewriting the array with the selected average.
           {
             for(x = 0; x < size; x++)
             {
@@ -332,8 +389,7 @@ void picture::mozaik(int size)
               pixelTab[index].green = green;
               }
             }
-          }
-//        On re-initialize les valeurs des pixel de zone
+          }//Re-initialize the values.
           red = 0;
           blue = 0;
           green = 0;
@@ -341,7 +397,7 @@ void picture::mozaik(int size)
     }
 }
 
-void picture::filter(int cmd)
+void picture::filter(int cmd)//Add/Remove filter.
 {
     int rfilter = 0;
     int gfilter = 0;
@@ -386,7 +442,7 @@ void picture::filter(int cmd)
         }
         break;
 
-        case 2 :
+        case 2 ://reoving the selected components.
         system("cls");
         cout << "Please, select the red level for the filter" << endl;
         cin >> rfilter;
@@ -426,7 +482,9 @@ void picture::filter(int cmd)
     }
 }
 
-void picture::sepia(){
+void picture::sepia()//Transform to sepia
+{
+    /* as for the grey scale, we use coefficients to convert to sepia. Changing these will result in different variations. */
     for(int i = 0; i < infoHeader.img_Height * infoHeader.img_Width; i++)
     {
         unsigned char rtemp = pixelTab[i].red;
