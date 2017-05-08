@@ -13,7 +13,7 @@ ________________________________________________________________________________
 ||                                                                                                                                    ||
 ||                                                                                                      LAPORTE NATHAN CLAUDE         ||
 ||                                                                                                      Nept CODE : IBIS2E            ||
-||                                                                                                      Ver. 1.10B March 2017         ||
+||                                                                                                                                    ||
 ||                                                                                                                                    ||
 ||                                                                                                                                    ||
 ||                                                                                                                                    ||
@@ -376,7 +376,8 @@ void picture::mozaik(int size)//Creates a mosaic.
         }
     }
 }
-void picturePalette::convert(){
+void picturePalette::convert()
+{
     int rfilter = 0;
     int gfilter = 0;
     int bfilter = 0;
@@ -504,6 +505,132 @@ void picture::sepia()//Transform to sepia
         else
         {
             pixelTab[i].blue = (rtemp * .272) + (gtemp *.534) + (btemp * .131);
+        }
+    }
+}
+
+filterObj::filterObj(const picture& picM)
+{
+    pixel tempor;
+    tempor.red = 0;
+    tempor.green = 0;
+    tempor.blue = 0;
+    for(int i =0; i < picM.infoHeader.img_Width*picM.infoHeader.img_Height; i++)
+    {
+        filterTab.push_back(tempor);
+    }
+}
+
+RGB::RGB(const picture& picM, char R, char G, char B) : filterObj(picM)
+{
+    pixel temporary;
+    temporary.red = R;
+    temporary.green = G;
+    temporary.blue = B;
+    for (int i = 0; i < picM.infoHeader.img_Width*picM.infoHeader.img_Height; i++)
+    {
+
+        filterTab.push_back(temporary);
+    }
+}
+picture RGB::applyRGB(picture& picM)
+{
+    for (int i = 0; i < picM.infoHeader.img_Width*picM.infoHeader.img_Height; i++)
+    {
+         if (picM.pixelTab[i].red - filterTab[i].red < 0)
+            {
+                picM.pixelTab[i].red = 0;
+            }
+            else if (filterTab[i].red < picM.pixelTab[i].red)
+            {
+                picM.pixelTab[i].red =  picM.pixelTab[i].red - filterTab[i].red;
+            }
+            if (picM.pixelTab[i].blue - filterTab[i].blue < 0)
+            {
+                picM.pixelTab[i].blue = 0;
+            }
+            else if (filterTab[i].blue < picM.pixelTab[i].blue)
+            {
+                picM.pixelTab[i].blue =  picM.pixelTab[i].blue - filterTab[i].blue;
+            }
+            if (picM.pixelTab[i].green - filterTab[i].green < 0)
+            {
+                picM.pixelTab[i].green = 0;
+            }
+            else if (filterTab[i].green < picM.pixelTab[i].green)
+            {
+                picM.pixelTab[i].green =  picM.pixelTab[i].green - filterTab[i].green;
+            }
+    }
+    return picM;
+
+}
+
+GreyScaleF::GreyScaleF(const picture& picM) : filterObj(picM)
+{
+    for(int i =0; i < picM.infoHeader.img_Width*picM.infoHeader.img_Height; i++)
+    {
+        filterTab.push_back(picM.pixelTab[i]);
+    }
+}
+
+picture applyGreyScaleF(picture& picM)
+{
+    float rweight2 = 0.2105;
+    float gweight2 = 0.7152;
+    float bweight2 = 0.0722;
+    for(int i =0; i < picM.infoHeader.img_Width*picM.infoHeader.img_Height; i++)
+    {
+        char btemp2 = picM.pixelTab[i].blue;
+        char gtemp2 = picM.pixelTab[i].green;
+        char rtemp2 = picM.pixelTab[i].red;
+        picM.pixelTab[i].blue = floor(bweight2*btemp2) + floor(rweight2*rtemp2) + floor(gweight2*gtemp2);
+        picM.pixelTab[i].red = floor(bweight2*btemp2) + floor(rweight2*rtemp2) + floor(gweight2*gtemp2);
+        picM.pixelTab[i].green = floor(bweight2*btemp2) + floor(rweight2*rtemp2) + floor(gweight2*gtemp2);
+    }
+    return picM;
+}
+
+
+sepiaF::sepiaF(const picture& picM) : filterObj(picM)
+{
+    for(int i =0; i < picM.infoHeader.img_Width*picM.infoHeader.img_Height; i++)
+    {
+        filterTab.push_back(picM.pixelTab[i]);
+    }
+}
+
+picture sepiaF::applySepiaF(picture& picM)
+{
+    for(int i =0; i < picM.infoHeader.img_Width*picM.infoHeader.img_Height; i++)
+    {
+        unsigned char rtemp2 = picM.pixelTab[i].red;
+        unsigned char gtemp2 = picM.pixelTab[i].green;
+        unsigned char btemp2 = picM.pixelTab[i].blue;
+        if((rtemp2 * .393) + (gtemp2 *.769) + (btemp2 * .189) > 255)
+        {
+            picM.pixelTab[i].red = 255;
+        }
+        else
+        {
+            picM.pixelTab[i].red = (rtemp2 * .393) + (gtemp2 *.769) + (btemp2 * .189);
+        }
+
+        if((rtemp2 * .349) + (gtemp2 *.686) + (btemp2 * .168) > 255)
+        {
+            picM.pixelTab[i].green = 255;
+        }
+        else
+        {
+            picM.pixelTab[i].green = (rtemp2 * .349) + (gtemp2 *.686) + (btemp2 * .168);
+        }
+        if((rtemp2 * .272) + (gtemp2 *.534) + (btemp2 * .131) > 255)
+        {
+            picM.pixelTab[i].blue = 255;
+        }
+        else
+        {
+            picM.pixelTab[i].blue = (rtemp2 * .272) + (gtemp2 *.534) + (btemp2 * .131);
         }
     }
 }
